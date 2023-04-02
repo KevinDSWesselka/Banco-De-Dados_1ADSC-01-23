@@ -1,3 +1,5 @@
+-- Kevin D.S. Wesselka - 02/04/2023
+
 -- 1. No MySQL Workbench, utilizando o banco de dados ‘sprint1’:
 create database db_sprint1;
 use db_sprint1;
@@ -71,6 +73,7 @@ nome_curso varchar(50),
 sigla varchar(3),
 coordenador varchar(45)
 );
+desc tb_curso;
 
 -- Regra de negocio:
 -- 1 Cruso tem N Salas
@@ -79,9 +82,32 @@ coordenador varchar(45)
 create table tb_sala (
 id_sala int primary key auto_increment,
 andar int,
+-- Crie um campo com a restrição (constraint) de CHECK;
 lado char(1), constraint chklado check (lado in ('A','B'))
 );
+desc tb_sala;
 
 alter table tb_sala add column fk_curso int,
 	add constraint fkcurso foreign key (fk_curso)
 		references tb_curso(id_curso);
+
+-- Inserir dados na tabela, procure inserir pelo menos 3 cursos
+insert into tb_curso values
+	(null, 'Analise em Desenvolvimento de Sistemas', 'ADS', 'Gerson'),
+	(null, 'Ciencias da Computação', 'CCO', 'Alex'),
+	(null, 'Segurança da Informação', 'SIS', 'Monica');
+    
+insert into tb_sala values 
+	(null, '3', 'A', 2),
+	(null, '1', 'B', 3),
+	(null, '1', 'A', 3),
+	(null, '2', 'A', 1);
+    
+-- Faça um JOIN entre as duas tabelas;
+select coordenador, sigla, andar from tb_sala join tb_curso 
+	on id_curso = fk_curso;
+    
+-- Faça um JOIN com WHERE entre as duas tabelas;
+select sigla, nome_curso, andar, lado from tb_curso join tb_sala 
+	on id_curso = fk_curso
+		where lado like 'A';
