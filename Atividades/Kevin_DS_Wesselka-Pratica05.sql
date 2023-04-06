@@ -173,3 +173,96 @@ delete from tb_gasto where id_gasto = 3;
 
 -- ===================================================================
 
+-- Fazer a modelagem lógica no MySQL Workbench de um sistema para cadastrar
+-- os setores de uma empresa, os funcionários desses setores e os acompanhantes
+-- desses funcionários para uma festa que a empresa está organizando para celebrar
+-- o fim da pandemia.
+
+-- Criar um banco de dados chamado.
+create database PraticaFuncionario;
+-- Selecionar esse banco de dados.
+use PraticaFuncionario;
+
+-- Regra de negocio:
+-- Cada setor pode ter mais de um funcionário.
+-- Cada funcionário trabalha apenas em um setor
+
+-- Criar as tabelas correspondentes à sua modelagem.
+create table tb_setor (
+id_setor int primary key auto_increment,
+nome_setor varchar(45),
+numero_andar int
+);
+
+create table tb_funcionario (
+id_funcionario int primary key auto_increment,
+nome_funcionario varchar(45),
+telefone varchar(20),
+salario decimal (6,2),
+constraint chkSalario check (salario > 0)
+);
+
+-- Fazer os acertos da chave estrangeira, caso não tenha feito no momento da criação.
+alter table tb_funcionario add column fk_setor int,
+	add constraint fksetor foreign key (fk_setor) references tb_setor(id_setor);
+desc tb_funcionario;
+
+create table tb_acompanhante (
+id_acompanhante int auto_increment,
+nome_acompanhante varchar(45),
+relação varchar(45),
+dt_nascimento date,
+fk_funcionario int,
+constraint fkfuncionario foreign key (fk_funcionario) references tb_funcionario(id_funcionario),
+constraint pfacompanhante primary key (id_acompanhante, fk_funcionario)
+);
+
+-- Inserir dados nas tabelas, de forma que exista mais de um funcionário em cada setor cadastrado
+insert into tb_setor values 
+	(null, 'Banco de Dados', 6),
+	(null, 'Algoritimos', 2),
+	(null, 'Arqui. Comp', 8);
+    
+insert into tb_funcionario values 
+	(null, 'Kevin', '+55 (11) 92222-2222', '4500.00', 1),
+	(null, 'Mariana', '+55 (11) 91111-1111', '4600.00', 1),
+	(null, 'Joao', '+55 (11) 92211-3311', '4500.00', 2),
+	(null, 'Julia', '+55 (11) 93251-3619', '4600.00', 2),
+	(null, 'Kat', '+55 (11) 93356-3659', '4600.00', 3),
+	(null, 'Eduardo', '+55 (11) 99231-2219', '4900.00', 3);
+    
+insert into tb_acompanhante values 
+	(null, 'Davi', 'Amigo(a)', '2003-07-18', 1),
+	(null, 'Amanda', 'Amigo(a)', '2002-03-14', 2);
+    
+-- Exibir todos os dados de cada tabela criada, separadamente.
+select * from tb_setor;
+select * from tb_funcionario;
+select * from tb_acompanhante;
+
+-- Exibir os dados dos setores e dos seus respectivos funcionários.
+select * from tb_funcionario join tb_setor 
+	on fk_setor = id_setor;
+    
+-- Exibir os dados de um determinado setor (informar o nome do setor na
+-- consulta) e dos seus respectivos funcionários
+select nome_setor, nome_funcionario, telefone, salario, fk_setor from tb_setor join tb_funcionario 
+	on fk_setor = id_setor;
+    
+-- Exibir os dados dos funcionários e de seus acompanhantes
+select nome_funcionario, nome_acompanhante from tb_funcionario join tb_acompanhante
+	on fk_funcionario = id_funcionario;
+    
+-- Exibir os dados de apenas um funcionário (informar o nome do funcionário) e os dados de seus acompanhantes
+select nome_funcionario, nome_acompanhante, relação, dt_nascimento, fk_funcionario from
+	tb_funcionario join tb_acompanhante 
+		on fk_funcionario = id_funcionario;
+
+-- Exibir os dados dos funcionários, dos setores em que trabalham e dos seus acompanhantes.
+select * from tb_setor join tb_funcionario 
+	on fk_setor = id_setor
+		join tb_acompanhante 
+			on fk_funcionario = id_funcionario;
+
+-- ===================================================================
+
