@@ -266,3 +266,78 @@ select * from tb_setor join tb_funcionario
 
 -- ===================================================================
 
+-- Criar um banco de dados chamado Treinador.
+--  Selecionar esse banco de dados.
+create database Treinador;
+use Treinador;
+
+-- Criar as tabelas correspondentes à sua modelagem.
+create table tb_treinador(
+id_treinador int primary key auto_increment,
+nome_treinador varchar(45),
+tel_treinador varchar(20),
+email_treinador varchar(45),
+fk_mentor int,
+constraint fkmentor foreign key (fk_mentor) references tb_treinador(id_treinador)
+)auto_increment = 10;
+
+select * from tb_treinador;
+
+create table tb_nadador (
+id_nadador int primary key auto_increment,
+nome_nadador varchar(45),
+estado_origem varchar(45),
+dt_nascimento date,
+fk_treinador int,
+-- Fazer os acertos da chave estrangeira, caso não tenha feito no momento da criação das tabelas
+constraint fktreinador foreign key (fk_treinador) references tb_treinador(id_treinador)
+)auto_increment = 100;
+
+
+-- Inserir dados nas tabelas, de forma que exista mais de um nadador para algum
+-- treinador, e mais de um treinador sendo orientado por algum treinador mais experiente.
+insert into  tb_treinador values
+	(null, 'Kevin', '+55 (11) 99231-2219', 'kevin@email.com', null);
+
+insert into  tb_treinador values
+	(null, 'Mariana', 'Mariana@email.com', '+55 (11) 92256-1319',  10),
+	(null, 'Neeko', 'Neeko@email.com', '+55 (11) 98296-1232',  10),
+	(null, 'Arhi', 'Arhi@email.com', '+55 (11) 98195-1211',  10);
+    
+insert into tb_nadador values 
+	(null, 'Malphite', 'São Paulo', '2010-06-21', 10),
+	(null, 'Zed', 'Rio de Janeiro', '2002-04-14', 11),
+	(null, 'Irelia', 'Rio Grande do Sul', '2004-06-11', 12),
+	(null, 'Tailon', 'Piaui', '2001-02-01', 13),
+	(null, 'Katarina', 'São Paulo', '2002-06-01', 13);
+    
+-- Exibir todos os dados de cada tabela criada, separadamente.
+select * from tb_treinador;
+select * from tb_nadador;
+
+-- Exibir os dados dos treinadores e os dados de seus respectivos nadadores.
+select * from tb_nadador join tb_treinador 
+	on fk_treinador = id_treinador;
+    
+-- Exibir os dados de um determinado treinador (informar o nome do treinador na consulta)
+-- e os dados de seus respectivos nadadores
+select nome_treinador, nome_nadador, estado_origem, dt_nascimento, fk_treinador from tb_nadador join tb_treinador 
+	on fk_treinador = id_treinador;
+    
+-- Exibir os dados dos treinadores e os dados dos respectivos treinadores orientadores.
+select * from tb_treinador as t1 join tb_treinador as t2
+	on t1.fk_mentor = t2.id_treinador;
+    
+-- Exibir os dados dos treinadores e os dados dos respectivos treinadores
+-- orientadores, porém somente de um determinado treinador orientador (informar o
+-- nome do treinador na consulta).
+select * from tb_treinador as t1 left join tb_treinador as t2
+	on t1.fk_mentor = t2.id_treinador
+		where t2.nome_treinador = 'Kevin';
+        
+-- Exibir os dados dos treinadores, os dados dos respectivos nadadores e os dados
+-- dos respectivos treinadores orientadores
+select tb_treinador.*, tb_nadador.* from tb_nadador join tb_treinador 
+	on tb_nadador.fk_treinador = tb_treinador.id_treinador
+		left join tb_treinador as mentor 
+			on tb_treinador.fk_mentor = mentor.id_treinador;
