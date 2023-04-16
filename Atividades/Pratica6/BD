@@ -17,8 +17,10 @@ id_aluno int,
 nome varchar(45),
 telefone char(12),
 fk_projeto int,
+fk_representante int,
 -- Fazer os acertos da chave estrangeira, caso não tenha feito no momento da criação.
 constraint fkprojeto foreign key (fk_projeto) references tb_projeto(id_projeto),
+constraint fkrepresentante foreign key (fk_representante) references tb_aluno (id_aluno),
 constraint pkaluno primary key (id_aluno, fk_projeto)
 );
 
@@ -40,19 +42,19 @@ insert into tb_projeto values
 (null,'Projeto de Limpeza dos Rios', 'Um projeto para limpar e preservar os rios que correm pela cidade'),
 (null,'Projeto de Bibliotecas Comunitárias', 'Um projeto para criar bibliotecas comunitárias em áreas carentes da cidade');
 
-insert into tb_aluno values
-(1, 'João Silva', '1199999999', 1),
-(2, 'Maria Santos', '1198888888', 1),
-(3, 'Pedro Alves', '1197777777', 2),
-(4, 'Ana Rodrigues', '1196666666', 3),
-(5, 'Lucas Oliveira', '1195555555', 3);
+INSERT INTO tb_aluno VALUES
+(1, 'João', '11987654321', 1, NULL),
+(2, 'Maria', '11912345678', 2, 1),
+(3, 'Pedro', '11987654321', 1, 1),
+(4, 'Julia', '11976543210', 2, 2),
+(5, 'Lucas', '11999998888', 1, NULL);
 
-insert tb_acompanhante values 
-(null, 'Ana Silva', 'Mãe', 1),
-(null, 'Pedro Santos', 'Pai', 1),
-(null, 'Luciana Alves', 'Tia', 3),
-(null, 'Jorge Rodrigues', 'Avô', 4),
-(null, 'Fernanda Oliveira', 'Irmã', 5);
+INSERT INTO tb_acompanhante VALUES 
+    (null, 'Fernanda', 'Irmã', 1),
+    (null, 'Luciana', 'Mãe', 2),
+    (null, 'Ricardo', 'Pai', 3),
+    (null, 'Roberto', 'Avô', 4),
+    (null, 'Marcela', 'Tia', 5);
 
 -- Exibir todos os dados de cada tabela criada, separadamente.
 select * from tb_aluno;
@@ -69,4 +71,23 @@ select * from tb_aluno join tb_acompanhante
     
 -- Exibir os dados dos alunos e dos seus representantes.
 select * from tb_aluno as Aluno join tb_aluno as Representante
-	on Aluno.fk_aluno 
+	on Aluno.fk_representante = Representante.id_aluno;
+    
+-- Exibir os dados dos alunos e dos projetos correspondentes, mas somente
+-- de um determinado projeto (indicar o nome do projeto na consulta).
+select tb_aluno.*, tb_projeto.nome as nome_projeto, tb_projeto.id_projeto, tb_projeto.descricao
+	from tb_aluno join tb_projeto 
+		on tb_aluno.fk_projeto = tb_projeto.id_projeto
+			where tb_projeto.nome = 'Projeto de Música nas Escolas';
+            
+-- Exibir os dados dos alunos, dos projetos correspondentes e dos seus acompanhantes.
+select * from tb_aluno join tb_projeto 
+	on fk_projeto = id_projeto
+		join tb_acompanhante 
+			on fk_aluno = id_aluno;
+
+-- ===========================================================================================
+
+-- 2. Fazer a modelagem lógica de um sistema para cadastrar as campanhas de
+-- doações que surgiram devido ao Covid-19 e os organizadores dessas campanhas
+
